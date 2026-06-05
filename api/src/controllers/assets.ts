@@ -15,11 +15,11 @@ import useCollection from '../middleware/use-collection.js';
 import { AssetsService } from '../services/assets.js';
 import { PayloadService } from '../services/payload.js';
 import asyncHandler from '../utils/async-handler.js';
-import { getCacheControlHeader } from '../utils/get-cache-headers.js';
 import { generateAssetETag } from '../utils/generate-etag.js';
+import { getCacheControlHeader } from '../utils/get-cache-headers.js';
 import { getConfigFromEnv } from '../utils/get-config-from-env.js';
 import { getMilliseconds } from '../utils/get-milliseconds.js';
-import { shouldReturn304, send304Response } from '../utils/handle-conditional-request.js';
+import { send304Response, shouldReturn304 } from '../utils/handle-conditional-request.js';
 import { isValidUuid } from '../utils/is-valid-uuid.js';
 
 const router = Router();
@@ -334,21 +334,17 @@ router.get(
 
 		const filename = req.params['filename'] ?? file.filename_download ?? file.id;
 		const cacheControl = getCacheControlHeader(req, getMilliseconds(env['ASSETS_CACHE_TTL']), false, true);
-		
+
 		// Parse last modified date
 		const unixTime = Date.parse(file.modified_on);
 		const lastModifiedDate = !Number.isNaN(unixTime) ? new Date(unixTime) : undefined;
 
 		// Generate ETag if cache revalidation is enabled
+
 		let etag: string | undefined;
+
 		if (env['ASSETS_CACHE_REVALIDATION'] !== false) {
-			etag = generateAssetETag(
-				file.id,
-				file.modified_on,
-				stat.size,
-				transformationParams,
-				acceptFormat,
-			);
+			etag = generateAssetETag(file.id, file.modified_on, stat.size, transformationParams, acceptFormat);
 		}
 
 		// Handle conditional requests for cache revalidation

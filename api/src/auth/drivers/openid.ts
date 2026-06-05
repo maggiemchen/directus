@@ -468,9 +468,19 @@ export function createOpenIDAuthRouter(providerName: string): Router {
 				},
 			);
 
+			const cookieSecure =
+				env[`AUTH_${providerName.toUpperCase()}_COOKIE_SECURE`] !== undefined
+					? Boolean(env[`AUTH_${providerName.toUpperCase()}_COOKIE_SECURE`])
+					: Boolean(env['SESSION_COOKIE_SECURE']);
+
+			const cookieSameSite = (env[`AUTH_${providerName.toUpperCase()}_COOKIE_SAME_SITE`] ||
+				env['SESSION_COOKIE_SAME_SITE'] ||
+				'lax') as 'lax' | 'strict' | 'none';
+
 			res.cookie(`openid.${providerName}`, token, {
 				httpOnly: true,
-				sameSite: 'lax',
+				secure: cookieSecure,
+				sameSite: cookieSameSite,
 			});
 
 			try {

@@ -384,9 +384,19 @@ export function createOAuth2AuthRouter(providerName: string): Router {
 				},
 			);
 
+			const cookieSecure =
+				env[`AUTH_${providerName.toUpperCase()}_COOKIE_SECURE`] !== undefined
+					? Boolean(env[`AUTH_${providerName.toUpperCase()}_COOKIE_SECURE`])
+					: Boolean(env['SESSION_COOKIE_SECURE']);
+
+			const cookieSameSite = (env[`AUTH_${providerName.toUpperCase()}_COOKIE_SAME_SITE`] ||
+				env['SESSION_COOKIE_SAME_SITE'] ||
+				'lax') as 'lax' | 'strict' | 'none';
+
 			res.cookie(`oauth2.${providerName}`, token, {
 				httpOnly: true,
-				sameSite: 'lax',
+				secure: cookieSecure,
+				sameSite: cookieSameSite,
 			});
 
 			return res.redirect(provider.generateAuthUrl(codeVerifier, prompt, callbackUrl));

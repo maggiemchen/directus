@@ -2149,6 +2149,15 @@ interfaces:
     all_opened: All Opened
     accordion_mode: Accordion Mode
     max_one_section_open: Max 1 Section Open
+  group-tabs:
+    name: Tabs
+    description: Display fields or groups in tabbed sections
+    tabs_placement: Tabs Placement
+    placement_top: Top
+    placement_left: Left
+    default_tab: Default Tab
+    first_tab: First Tab
+    last_opened_tab: Last Opened Tab
   presentation-links:
     presentation-links: Buttons
     description: Configurable link buttons for launching dynamic URLs or triggering Flows

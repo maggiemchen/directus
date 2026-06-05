@@ -5,6 +5,7 @@ import { respond } from '../middleware/respond.js';
 import { validateBatch } from '../middleware/validate-batch.js';
 import { CollectionsService } from '../services/collections.js';
 import { MetaService } from '../services/meta.js';
+import { TranslationGeneratorService } from '../services/translation-generator.js';
 import asyncHandler from '../utils/async-handler.js';
 
 const router = Router();
@@ -147,6 +148,27 @@ router.delete(
 
 		await collectionsService.deleteOne(req.params['collection']!);
 
+		return next();
+	}),
+	respond,
+);
+
+router.post(
+	'/:collection/translations/generate',
+	asyncHandler(async (req, res, next) => {
+		const translationGeneratorService = new TranslationGeneratorService({
+			accountability: req.accountability,
+			schema: req.schema,
+		});
+
+		const result = await translationGeneratorService.generateTranslations({
+			collection: req.params['collection']!,
+			fieldName: req.body.fieldName,
+			languagesCollection: req.body.languagesCollection,
+			translatableFields: req.body.translatableFields,
+		});
+
+		res.locals['payload'] = { data: result };
 		return next();
 	}),
 	respond,

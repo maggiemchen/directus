@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { Field, LocalType } from '@directus/types';
 import { isNil, orderBy } from 'lodash';
-import { computed, onBeforeMount, onBeforeUnmount, toRefs } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, ref, toRefs } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Draggable from 'vuedraggable';
 import FieldSelect from './FieldSelect.vue';
+import TranslationGeneratorDialog from './translation-generator-dialog.vue';
 import VButton from '@/components/v-button.vue';
 import VDivider from '@/components/v-divider.vue';
 import VIcon from '@/components/v-icon/v-icon.vue';
@@ -27,6 +28,8 @@ const fieldsStore = useFieldsStore();
 onBeforeMount(async () => await fieldsStore.hydrate({ skipTranslation: true }));
 onBeforeUnmount(() => fieldsStore.translateFields());
 
+const showTranslationGenerator = ref(false);
+
 const fields = computed(() => fieldsStore.getFieldsForCollectionSorted(collection.value));
 
 const parsedFields = computed(() => {
@@ -41,6 +44,10 @@ const lockedFields = computed(() => {
 
 const usableFields = computed(() => {
 	return parsedFields.value.filter((field) => field.meta?.system !== true);
+});
+
+const hasTranslationsField = computed(() => {
+	return fields.value.some((field) => field.meta?.special?.includes('translations'));
 });
 
 const addOptions = computed<Array<{ type: LocalType; icon: string; text: any } | { divider: boolean }>>(() => [
@@ -124,6 +131,10 @@ async function setNestedSort(updates?: Field[]) {
 		await fieldsStore.updateFields(collection.value, updates);
 	}
 }
+
+function onTranslationGenerated() {
+	showTranslationGenerator.value = false;
+}
 </script>
 
 <template>
@@ -152,6 +163,18 @@ async function setNestedSort(updates?: Field[]) {
 			{{ $t('create_field') }}
 		</VButton>
 
+		<VButton
+			v-if="!hasTranslationsField"
+			v-tooltip.bottom="$t('generate_translation_structure_tooltip')"
+			full-width
+			secondary
+			class="generate-translations-button"
+			@click="showTranslationGenerator = true"
+		>
+			<VIcon name="translate" left />
+			{{ $t('generate_translation_structure') }}
+		</VButton>
+
 		<VMenu show-arrow>
 			<template #activator="{ toggle, active }">
 				<button class="add-field-advanced" :dashed="!active" :class="{ active }" @click="toggle">
@@ -172,6 +195,12 @@ async function setNestedSort(updates?: Field[]) {
 				</template>
 			</VList>
 		</VMenu>
+
+		<TranslationGeneratorDialog
+			v-model="showTranslationGenerator"
+			:collection="collection"
+			@generated="onTranslationGenerated"
+		/>
 	</div>
 </template>
 
@@ -222,6 +251,15 @@ async function setNestedSort(updates?: Field[]) {
 	&:hover {
 		color: var(--theme--foreground);
 	}
+}
+
+.generate-translations-button {
+	--v-button-background-color: var(--theme--background-accent);
+	--v-button-color: var(--theme--primary);
+	--v-button-background-color-hover: var(--theme--primary-10);
+	--v-button-border-color: var(--theme--primary-25);
+
+	margin-block-start: 0.5rem;
 }
 
 .visible {

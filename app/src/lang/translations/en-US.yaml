@@ -2959,3 +2959,37 @@ text_direction_auto: Automatic (Match Language)
 text_direction_ltr: Left to Right (LTR)
 text_direction_rtl: Right to Left (RTL)
 set_to_now: Set to Now
+generate_translation_structure: Generate Translation Structure
+generate_translation_structure_tooltip: Automatically create translation fields, collections, and relationships
+translation_structure_generated: Translation Structure Generated
+translation_structure_generated_copy: Successfully created translation field "{field}" and junction collection "{collection}" with all necessary relationships
+translation_field_name: Translation Field Name
+translation_field_name_placeholder: translations
+languages_collection: Languages Collection
+select_languages_collection: Select or create languages collection
+create_new_languages_collection: Create New Languages Collection
+translatable_fields: Translatable Fields
+no_translatable_fields: No translatable fields defined. Add fields that should be translated for each language.
+add_translatable_field: Add Translatable Field
+translatable_field_name: Field Name
+field_type: Field Type
+generate_translations: Generate Translations
+field_types:
+  string: Text (String)
+  text: Long Text
+  integer: Integer Number
+  float: Decimal Number
+  boolean: True/False
+  date: Date
+  dateTime: Date & Time
+  json: JSON Data
+interfaces:
+  input: Input Field
+  textarea: Text Area
+  input_rich_text_html: Rich Text (HTML)
+  input_rich_text_md: Rich Text (Markdown)
+  boolean: Checkbox
+  toggle: Toggle Switch
+  datetime: Date & Time Picker
+  input_code: Code Editor
+  slider: Number Slider
